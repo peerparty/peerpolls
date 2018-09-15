@@ -12,7 +12,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
 
 // Unlock the coinbase account to make transactions out of it
 function unlock(addr, password) {
-  console.log("Unlocking coinbase account");
+  //console.log("Unlocking coinbase account");
   try {
     web3.eth.personal.unlockAccount(addr, password)
   } catch(e) {
@@ -198,11 +198,10 @@ async function run() {
     posts(abi, process.argv[2], process.argv[4])
   } else {
     unlock(process.argv[2], process.argv[3])
-    console.log("Deploying...")
     const contractAddr = await deploy(abi, code, process.argv[2])
     console.log(contractAddr)
-    console.log("Testing...")
-    test(abi, process.argv[2], contractAddr)
+    //console.log("Testing...")
+    //test(abi, process.argv[2], contractAddr)
   }
 }
 
