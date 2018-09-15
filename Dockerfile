@@ -6,8 +6,8 @@ RUN apt-get update; \
   add-apt-repository -y ppa:ethereum/ethereum; \
   apt-get update; \
   apt-get --yes install ethereum solc; \
-  curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -; \
-  sudo apt-get install -y nodejs
+  curl -sL https://deb.nodesource.com/setup_8.x | bash -; \
+  apt-get install -y nodejs
 
 ADD gethpass /root
 ADD genesis.json /root
