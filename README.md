@@ -6,7 +6,7 @@ Political polling billboard with voting and comment system built on a private Et
 
 ### Start Debian container
 
-`$ docker run -p 80:80 -it --name peerpolls debian:latest`
+`$ docker run -p 80:80 -p 8545 -it --name peerpolls ubuntu:latest`
 
 #### If you want to map to a directory/folder outside the container
 
