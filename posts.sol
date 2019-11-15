@@ -99,6 +99,8 @@ contract Posts is owned {
   */
 
   function addVote(uint postIndex, bool up) public {
+    // TODO : require post exists - JBG
+    // TODO : Vote once - JBG
     postVotes[postIndex].push(votes.length);
     votes.push(Vote({
       id: votes.length,
