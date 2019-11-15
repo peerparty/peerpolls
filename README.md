@@ -6,11 +6,7 @@ Political polling billboard with voting and comment system built on a private Et
 
 ### Start Debian container
 
-`$ docker run -p 80:80 -p 8545:8545 -it --name peerpolls ubuntu:latest`
-
-#### If you want to map to a directory/folder outside the container
-
-`$ docker run -p 80:80 -it -v /home/jbg/Development/polls-app:/var/www/html/polls-app --name peerpolls peerpolls`
+`$ docker run -p 80:80 -p 8545:8545 -p 30303:30303 -it --name peerpolls ubuntu:latest`
 
 ### Install dependencies
 
@@ -119,7 +115,7 @@ What would you like to do? (default = stats)
 
 ### Start geth
 
-`$ geth --unlock <COINBASE_HASH> --password /root/gethpass --mine --rpc --rpcapi "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb console`
+`$ geth --unlock <COINBASE_HASH> --password /root/gethpass --mine --rpc --rpcapi "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb --rpcaddr "0.0.0.0" console`
 
 ## The contract
 
