@@ -4,6 +4,14 @@ Political polling billboard with voting and comment system built on a private Et
 
 ## Setup 
 
+### Start Debian container
+
+`$ docker run -p 80:80 -p 8545:8545 -it --name peerpolls ubuntu:latest`
+
+#### If you want to map to a directory/folder outside the container
+
+`$ docker run -p 80:80 -it -v /home/jbg/Development/polls-app:/var/www/html/polls-app --name peerpolls peerpolls`
+
 ### Install dependencies
 
 `$ apt-get update`
