@@ -1,6 +1,6 @@
 exports.creds = {
   "admin": {
-    "pwd": "<GETH_PASS>",
+    "pwd": "password",
     "addr": "<COINBASE_HASH>" 
   }
 };
