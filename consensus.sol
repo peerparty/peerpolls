@@ -108,7 +108,18 @@ contract Posts is owned {
     }));
   }
 
+  function postConsensus(uint postIndex) public view returns (bool) {
+    bool consensus = true;
+    bool up = votes[postVotes[postIndex][0]].up;
+    for(uint i = 1; consensus && i < postVotes[postIndex].length; i++) {
+      uint voteId = postVotes[postIndex][i];
+      consensus = up == votes[voteId].up;
+    }
+    return consensus;
+  }
+
   function addComment(uint postIndex, string memory comment) public {
+    require(!postConsensus(postIndex) && postVotes[postIndex].length > 1);
     postComments[postIndex].push(comments.length);
     comments.push(Comment({
       id: comments.length,
@@ -126,9 +137,20 @@ contract Posts is owned {
       up: up,
       date: now
     }));
+ }
+
+  function commentConsensus(uint commentIndex) public view returns (bool) {
+    bool consensus = true;
+    bool up = votes[commentVotes[commentIndex][0]].up;
+    for(uint i = 1; consensus && i < commentVotes[commentIndex].length; i++) {
+      uint voteId = commentVotes[commentIndex][i];
+      consensus = up == votes[voteId].up;
+    }
+    return consensus;
   }
 
   function addCommentComment(uint commentIndex, string memory comment) public {
+    require(!commentConsensus(commentIndex));
     commentComments[commentIndex].push(comments.length);
     comments.push(Comment({
       id: comments.length,
