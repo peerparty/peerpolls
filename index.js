@@ -69,7 +69,7 @@ async function test(abi, addr, contractAddr) {
 
     // Vote for the Post - JBG
     //let up = Math.random() >= 0.5
-    let up = true 
+    let up = false 
     let addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas()
     console.log("addVote gas: " + gas)

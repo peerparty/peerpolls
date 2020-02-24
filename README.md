@@ -141,25 +141,29 @@ Will return the contract address, save it for later.
 
 ### Login
 
-`$ curl --cookie-jar cookies.txt -d "name=admin&pwd=password" "http://localhost/api/login"`
+`$ curl --cookie-jar cookies.txt -d "name=admin&pwd=password" "https://api.peerparty.org//login"`
+
+### Get posts
+
+`$ curl --cookie cookies.txt "https://api.peerparty.org//posts"`
 
 ### Create a post/poll
 
-`$ curl --cookie cookies.txt -d "title=foobar&description=baz" "http://localhost/api/posts"`
+`$ curl --cookie cookies.txt -d "title=foobar&description=baz" "https://api.peerparty.org//posts"`
 
 ### Up vote a post/poll
 
-`$ curl --cookie cookies.txt -d "up=true" "http://localhost/api/posts/1/votes"`
+`$ curl --cookie cookies.txt -d "up=true" "https://api.peerparty.org/posts/1/votes"`
 
 ### Comment on a post/poll
 
-`$ curl --cookie cookies.txt -d "comment=foo" "http://localhost/api/posts/1/comments"`
+`$ curl --cookie cookies.txt -d "comment=foo" "https://api.peerparty.org/posts/1/comments"`
 
 ### Down vote a comment
 
-`$ curl --cookie cookies.txt -d "up=false" "http://localhost/api/comments/1/votes"`
+`$ curl --cookie cookies.txt -d "up=false" "https://api.peerparty.org/comments/1/votes"`
 
 ### Comment on a comment
 
-`$ curl --cookie cookies.txt -d "comment=bar" "http://localhost/api/comments/1/comments"`
+`$ curl --cookie cookies.txt -d "comment=bar" "https://api.peerparty.org/comments/1/comments"`
 
