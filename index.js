@@ -52,7 +52,7 @@ async function test(abi, addr, contractAddr) {
     */
 
     // Add Post - JBG    
-    const addPost = contract.methods.addPost("foo", "bar")
+    const addPost = contract.methods.addPost("The Netherlands government does not represent me.", "Elected officials require large donors and rather follow those interests, over my own.")
     let gas = await addPost.estimateGas()
     console.log("addPost gas: " + gas)
     
@@ -77,7 +77,7 @@ async function test(abi, addr, contractAddr) {
     console.log(tx.status ? `SUCCESS: Vote added, ${up}` : "Tx FAILED.")
 
     // Add second conflicting vote for the Post - JBG
-    up = true 
+    up = false 
     addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas()
     console.log("addVote gas: " + gas)
@@ -92,7 +92,7 @@ async function test(abi, addr, contractAddr) {
     console.log(`Consensus?: ${con}`)
 
     // Comment on Post - JBG
-    const comment = "baz"
+    const comment = "Officials are selected via voting, so they do represent the ideas of the people."
     const addComment = contract.methods.addComment(postIndex, comment)
     gas = await addComment.estimateGas()
     console.log("addComment gas: " + gas)
