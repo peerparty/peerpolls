@@ -135,7 +135,7 @@ Will return the contract address, save it for later.
 
 ### Test the contract
 
-`$ node index.js  <COINBASE_HASH> <COINBASE_PASSWORD> <CONTRACT_ADDRESS>`
+`$ node index.js  <COINBASE_HASH> <COINBASE_PASSWORD> <CONTRACT_ADDRESS> <TEST_USER_HASH> <TEST_USER_PASSWORD>`
 
 ## API stuff
 
@@ -166,4 +166,17 @@ Will return the contract address, save it for later.
 ### Comment on a comment
 
 `$ curl --cookie cookies.txt -d "comment=bar" "https://api.peerparty.org/comments/1/comments"`
+
+## Helpful stuff
+
+### Geth
+
+Get account balance.
+
+    > eth.getBalance(eth.coinbase)
+
+Get accounts
+
+    > eth.accounts
+
 
