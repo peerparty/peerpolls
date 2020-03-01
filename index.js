@@ -71,12 +71,20 @@ async function test(abi, addr, contractAddr, addr2) {
     console.log("Got post: " + post.id)
 
     // Vote for the Post - JBG
-    let up = true 
+    let up = false 
     let addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas()
     console.log("addVote gas: " + gas)
     tx = await addVote.send({from: addr, gas: gas})
     console.log(tx.status ? `SUCCESS: Vote added, ${up}` : "Tx FAILED.")
+
+    // Chage vote for the Post - JBG
+    up = true 
+    addVote = contract.methods.addVote(postIndex, up)
+    gas = await addVote.estimateGas()
+    console.log("addVote gas: " + gas)
+    tx = await addVote.send({from: addr, gas: gas})
+    console.log(tx.status ? `SUCCESS: Changed vote, ${up}` : "Tx FAILED.")
 
     // Add second conflicting vote for the Post - JBG
     console.log("Add second conflicting vote for the Post...")
@@ -100,7 +108,7 @@ async function test(abi, addr, contractAddr, addr2) {
     console.log(`Consensus?: ${con}`)
 
     // Comment on Post - JBG
-    const comment = "Officials are selected via voting, so they do represent the ideas of the people."
+    let comment = "Officials are selected via voting, so they do represent the ideas of the people."
     const addComment = contract.methods.addComment(postIndex, comment)
     gas = await addComment.estimateGas()
     console.log("addComment gas: " + gas)
@@ -149,6 +157,7 @@ async function test(abi, addr, contractAddr, addr2) {
     console.log(`Consensus?: ${con}`)
 
     // Comment on comment - JBG
+    comment = "Campaigns, however, are financed by corporations."
     const addCommentComment = contract.methods.addCommentComment(commentIndex, comment)
     gas = await addCommentComment.estimateGas()
     console.log("addCommentComment gas: " + gas)
@@ -156,7 +165,7 @@ async function test(abi, addr, contractAddr, addr2) {
     console.log(tx.status ? "SUCCESS: Commented on comment." : "Tx FAILED.")
 
     // Get the threads - JBG
-    posts(abi, addr, contractAddr)
+    posts(abi, contractAddr)
 
   } catch(e) {
     console.error(e)
@@ -168,6 +177,7 @@ async function comments(contract, tabs, commentIndex) {
   console.log(tabs + comment.id + " " + comment.comment)
 
   const commentVotes = await contract.methods.getCommentVotes(commentIndex).call()
+
   for(let k = 0; k < commentVotes.length; k++) {
     const voteIndex = commentVotes[k]
     const vote = await contract.methods.votes(voteIndex).call()
@@ -182,7 +192,7 @@ async function comments(contract, tabs, commentIndex) {
   }
 }
 
-async function posts(abi, addr, contractAddr) {
+async function posts(abi, contractAddr) {
   try {
     const contract = new web3.eth.Contract(abi, contractAddr)
 
@@ -221,15 +231,17 @@ async function run() {
   // Smart contract EVM bytecode as hex
   const code = '0x' + contracts["consensus.sol:Posts"].bin 
 
-  if(process.argv.length < 4) {
+  if(process.argv.length < 3) {
     console.log("Usage: ")
     console.log("\tnode index.js 0xCOINBASE_ACCOUNT password 0xCONTRACT 0xTEST_ACCOUNT password")
     console.log("\tnode index.js 0xCOINBASE_ACCOUNT password")
+  } else if(process.argv.length === 3) {
+    posts(abi, process.argv[2])
   } else if(process.argv.length > 4) {
     await unlock(process.argv[2], process.argv[3])
     await unlock(process.argv[5], process.argv[6])
     console.log("Testing...")
-    test(abi, process.argv[2], process.argv[4], process.argv[5], process.argv[6])
+    test(abi, process.argv[2], process.argv[4], process.argv[5])
     //posts(abi, process.argv[2], process.argv[4])
   } else {
     await unlock(process.argv[2], process.argv[3])
