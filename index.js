@@ -156,7 +156,7 @@ async function test(abi, addr, contractAddr, addr2) {
     console.log(tx.status ? "SUCCESS: Commented on comment." : "Tx FAILED.")
 
     // Get the threads - JBG
-    posts(abi, addr, contractAddr)
+    posts(abi, contractAddr)
 
   } catch(e) {
     console.error(e)
@@ -182,7 +182,7 @@ async function comments(contract, tabs, commentIndex) {
   }
 }
 
-async function posts(abi, addr, contractAddr) {
+async function posts(abi, contractAddr) {
   try {
     const contract = new web3.eth.Contract(abi, contractAddr)
 
@@ -221,10 +221,12 @@ async function run() {
   // Smart contract EVM bytecode as hex
   const code = '0x' + contracts["consensus.sol:Posts"].bin 
 
-  if(process.argv.length < 4) {
+  if(process.argv.length < 3) {
     console.log("Usage: ")
     console.log("\tnode index.js 0xCOINBASE_ACCOUNT password 0xCONTRACT 0xTEST_ACCOUNT password")
     console.log("\tnode index.js 0xCOINBASE_ACCOUNT password")
+  } else if(process.argv.length === 3) {
+    posts(abi, process.argv[2])
   } else if(process.argv.length > 4) {
     await unlock(process.argv[2], process.argv[3])
     await unlock(process.argv[5], process.argv[6])
