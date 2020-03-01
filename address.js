@@ -1,1 +1,1 @@
-exports.contractAddress = "<CONTRACT_ADDR>";
+exports.contractAddress = "<CONTRACT_ADDR>"

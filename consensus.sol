@@ -27,6 +27,7 @@ contract Posts is owned {
     address addr;
     bool up;
     uint date;
+    bool changed;
   }
 
   struct Comment {
@@ -98,24 +99,46 @@ contract Posts is owned {
   }
   */
 
-  function addVote(uint postIndex, bool up) public {
+  function addVote(uint postIndex, bool up) public  {
+
+    /* Change vote if already voted - JBG */
+    for(uint i = 0; i < postVotes[postIndex].length; i++) {
+      uint voteId = postVotes[postIndex][i];
+      if(votes[voteId].addr == msg.sender) {
+        votes[voteId].changed = true;
+      }
+    }
+
+    /* Otherwise create new vote - JBG */
     postVotes[postIndex].push(votes.length);
     votes.push(Vote({
       id: votes.length,
       addr: msg.sender,
       up: up,
-      date: now
+      date: now,
+      changed: false 
     }));
+
   }
 
   function postConsensus(uint postIndex) public view returns (bool) {
+
     bool consensus = true;
-    bool up = votes[postVotes[postIndex][0]].up;
-    for(uint i = 1; consensus && i < postVotes[postIndex].length; i++) {
+
+    /* Find the first unchanged vote - JBG */
+    uint first = 0;
+    while(votes[postVotes[postIndex][first]].changed) ++first;
+    bool up = votes[postVotes[postIndex][first]].up;
+
+    /* Check the reminding votes - JBG */
+    for(uint i = first + 1; consensus && i < postVotes[postIndex].length; i++) {
       uint voteId = postVotes[postIndex][i];
-      consensus = up == votes[voteId].up;
+      if(!votes[voteId].changed)
+        consensus = up == votes[voteId].up;
     }
+
     return consensus;
+
   }
 
   function addComment(uint postIndex, string memory comment) public {
@@ -130,23 +153,45 @@ contract Posts is owned {
   }
 
   function addCommentVote(uint commentIndex, bool up) public {
+
+    /* Change vote if already voted - JBG */
+    for(uint i = 0; i < commentVotes[commentIndex].length; i++) {
+      uint voteId = commentVotes[commentIndex][i];
+      if(votes[voteId].addr == msg.sender) {
+        votes[voteId].changed = true;
+      }
+    }
+
+    /* Otherwise create new vote - JBG */
     commentVotes[commentIndex].push(votes.length);
     votes.push(Vote({
       id: votes.length,
       addr: msg.sender,
       up: up,
-      date: now
+      date: now,
+      changed: false
     }));
+
  }
 
   function commentConsensus(uint commentIndex) public view returns (bool) {
+
     bool consensus = true;
-    bool up = votes[commentVotes[commentIndex][0]].up;
-    for(uint i = 1; consensus && i < commentVotes[commentIndex].length; i++) {
+
+    /* Find the first unchanged vote - JBG */
+    uint first = 0;
+    while(votes[commentVotes[commentIndex][first]].changed) ++first;
+    bool up = votes[commentVotes[commentIndex][first]].up;
+
+    /* Check the reminding votes - JBG */
+    for(uint i = first + 1; consensus && i < commentVotes[commentIndex].length; i++) {
       uint voteId = commentVotes[commentIndex][i];
-      consensus = up == votes[voteId].up;
+      if(!votes[voteId].changed)
+        consensus = up == votes[voteId].up;
     }
+
     return consensus;
+
   }
 
   function addCommentComment(uint commentIndex, string memory comment) public {

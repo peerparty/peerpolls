@@ -11,10 +11,10 @@ const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
 //const web3 = new Web3(new Web3.providers.WebsocketProvider('http://127.0.0.1:8545'));
 
 // Unlock the coinbase account to make transactions out of it
-function unlock(addr, password) {
+async function unlock(addr, password) {
   //console.log("Unlocking coinbase account");
   try {
-    web3.eth.personal.unlockAccount(addr, password)
+    await web3.eth.personal.unlockAccount(addr, password)
   } catch(e) {
     console.log(e)
     return
@@ -38,7 +38,7 @@ async function deploy(abi, code, addr) {
   }
 }
 
-async function test(abi, addr, contractAddr) {
+async function test(abi, addr, contractAddr, addr2) {
   try { 
 
     const contract = new web3.eth.Contract(abi, contractAddr)
@@ -51,12 +51,15 @@ async function test(abi, addr, contractAddr) {
     })
     */
 
+    const balanceAddr2 = await web3.eth.getBalance(addr2)
+    console.log(`Balance addr2: ${balanceAddr2}`)
+
     // Add Post - JBG    
     const addPost = contract.methods.addPost("The Netherlands government does not represent me.", "Elected officials require large donors and rather follow those interests, over my own.")
     let gas = await addPost.estimateGas()
     console.log("addPost gas: " + gas)
     
-    let tx = await addPost.send({from: addr, gas: gas})
+    let tx = await addPost.send({from: addr2, gas: gas})
     console.log(tx.status ? "SUCCESS: Post added." : "Tx FAILED.")
 
     let c = await contract.methods.postCount().call()
@@ -68,8 +71,7 @@ async function test(abi, addr, contractAddr) {
     console.log("Got post: " + post.id)
 
     // Vote for the Post - JBG
-    //let up = Math.random() >= 0.5
-    let up = false 
+    let up = true 
     let addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas()
     console.log("addVote gas: " + gas)
@@ -77,14 +79,20 @@ async function test(abi, addr, contractAddr) {
     console.log(tx.status ? `SUCCESS: Vote added, ${up}` : "Tx FAILED.")
 
     // Add second conflicting vote for the Post - JBG
+    console.log("Add second conflicting vote for the Post...")
     up = false 
     addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas()
     console.log("addVote gas: " + gas)
-    tx = await addVote.send({from: addr, gas: gas})
+    tx = await addVote.send({from: addr2, gas: gas})
     console.log(tx.status ? `SUCCESS: Vote added, ${up}` : "Tx FAILED.")
 
+    // Check vote count - JBG
+    let votes = await contract.methods.getPostVotes(postIndex).call()
+    console.log("# Votes: " + votes.length)
+
     // Check post consensus - JBG
+    console.log("Check post consensus...")
     const postConsensus = contract.methods.postConsensus(postIndex)
     gas = await postConsensus.estimateGas()
     console.log(`postConsensus gas ${gas}`)
@@ -105,22 +113,35 @@ async function test(abi, addr, contractAddr) {
 
     // Vote on Comment - JBG
     const commentIndex = c - 1
-    up = true 
+    up = false 
     let addCommentVote = contract.methods.addCommentVote(commentIndex, up)
     gas = await addCommentVote.estimateGas()
     console.log("addCommentVote gas: " + gas)
     tx = await addCommentVote.send({from: addr, gas: gas})
     console.log(tx.status ? `SUCCESS: Voted on comment, ${up}.` : "Tx FAILED.")
 
+    // Update vote on Comment - JBG
+    up = true 
+    addCommentVote = contract.methods.addCommentVote(commentIndex, up)
+    gas = await addCommentVote.estimateGas()
+    console.log("addCommentVote gas: " + gas)
+    tx = await addCommentVote.send({from: addr, gas: gas})
+    console.log(tx.status ? `SUCCESS: Change vote on comment, ${up}.` : "Tx FAILED.")
+
     // Add second conflicting vote on Comment - JBG
     up = false 
     addCommentVote = contract.methods.addCommentVote(commentIndex, up)
     gas = await addCommentVote.estimateGas()
     console.log("addCommentVote gas: " + gas)
-    tx = await addCommentVote.send({from: addr, gas: gas})
+    tx = await addCommentVote.send({from: addr2, gas: gas})
     console.log(tx.status ? `SUCCESS: Voted on comment, ${up}.` : "Tx FAILED.")
 
+    // Check vote count - JBG
+    votes = await contract.methods.getCommentVotes(commentIndex).call()
+    console.log("# Votes: " + votes.length)
+
     // Check comment consensus - JBG
+    console.log("Check comment consensus...")
     const commentConsensus = contract.methods.commentConsensus(commentIndex)
     gas = await commentConsensus.estimateGas()
     console.log(`commentConsensus gas ${gas}`)
@@ -133,7 +154,6 @@ async function test(abi, addr, contractAddr) {
     console.log("addCommentComment gas: " + gas)
     tx = await addCommentComment.send({from: addr, gas: gas})
     console.log(tx.status ? "SUCCESS: Commented on comment." : "Tx FAILED.")
-
 
     // Get the threads - JBG
     posts(abi, addr, contractAddr)
@@ -203,15 +223,16 @@ async function run() {
 
   if(process.argv.length < 4) {
     console.log("Usage: ")
-    console.log("\tnode index.js 0xACCOUNT password 0xCONTRACT")
-    console.log("\tnode index.js 0xACCOUNT password")
+    console.log("\tnode index.js 0xCOINBASE_ACCOUNT password 0xCONTRACT 0xTEST_ACCOUNT password")
+    console.log("\tnode index.js 0xCOINBASE_ACCOUNT password")
   } else if(process.argv.length > 4) {
-    unlock(process.argv[2], process.argv[3])
+    await unlock(process.argv[2], process.argv[3])
+    await unlock(process.argv[5], process.argv[6])
     console.log("Testing...")
-    test(abi, process.argv[2], process.argv[4])
+    test(abi, process.argv[2], process.argv[4], process.argv[5], process.argv[6])
     //posts(abi, process.argv[2], process.argv[4])
   } else {
-    unlock(process.argv[2], process.argv[3])
+    await unlock(process.argv[2], process.argv[3])
     const contractAddr = await deploy(abi, code, process.argv[2])
     console.log(contractAddr)
     //console.log("Testing...")

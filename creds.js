@@ -3,4 +3,4 @@ exports.creds = {
     "pwd": "password",
     "addr": "<COINBASE_HASH>" 
   }
-};
+}
