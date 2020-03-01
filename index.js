@@ -77,7 +77,7 @@ async function test(abi, addr, contractAddr) {
     console.log(tx.status ? `SUCCESS: Vote added, ${up}` : "Tx FAILED.")
 
     // Add second conflicting vote for the Post - JBG
-    up = false 
+    up = true 
     addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas()
     console.log("addVote gas: " + gas)
