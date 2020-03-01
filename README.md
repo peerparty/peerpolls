@@ -125,7 +125,7 @@ What would you like to do? (default = stats)
 
 ### Compile the contract
 
-`$ solc posts.sol --combined-json abi,bin > posts.json`
+`$ solc consensus.sol --combined-json abi,bin > consensus.json`
 
 ### Deploy the contract
 

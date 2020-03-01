@@ -73,7 +73,7 @@ contract Posts is owned {
   }
 
   function commentCount() public view returns (uint) {
-    return votes.length;
+    return comments.length;
   }
 
   function getPostVotes(uint postIndex) public view returns (uint[] memory) {
