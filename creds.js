@@ -12,4 +12,4 @@ exports.creds = {
     "pwd": "OPfgv4OCgoAuEnlqSSbELLCRzK3mIyOw",
     "addr": "0xbaA522597B9344BE5cf9A643725F4428c4C8A430"
   }
-};
+}

@@ -1,1 +1,1 @@
-exports.contractAddress = "0x8FEbbD767395d103943D7CC6f4832a2c72C454BE"
+exports.contractAddress = "<CONTRACT_ADDR>"
