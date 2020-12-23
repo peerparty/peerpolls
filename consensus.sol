@@ -1,24 +1,9 @@
-pragma solidity ^0.5.12;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.3;
+
 //pragma experimental ABIEncoderV2;
 
-contract owned {
-  address public owner;
-
-  constructor() public {
-    owner = msg.sender;
-  }
-
-  modifier onlyOwner {
-    require(msg.sender == owner);
-    _;
-  }
-
-  function transferOwnership(address newOwner) onlyOwner public {
-    owner = newOwner;
-  }
-}
-
-contract Posts is owned {
+contract Posts {
 
   //event VoteEvent(address indexed from, bool value);
 
@@ -52,7 +37,7 @@ contract Posts is owned {
   mapping (uint => uint[]) public postVotes;  
   mapping (uint => uint[]) public postComments;  
   mapping (uint => uint[]) public commentVotes;  
-  mapping (uint => uint[]) public commentComments;  
+  mapping (uint => uint[]) public commentComments;
 
   function addPost(string memory title, string memory description) public {
     posts.push(Post({
@@ -60,7 +45,7 @@ contract Posts is owned {
       addr: msg.sender,
       title: title,
       description: description,
-      date: now
+      date: block.timestamp 
     }));
   }
 
@@ -115,7 +100,7 @@ contract Posts is owned {
       id: votes.length,
       addr: msg.sender,
       up: up,
-      date: now,
+      date: block.timestamp,
       changed: false 
     }));
 
@@ -142,13 +127,13 @@ contract Posts is owned {
   }
 
   function addComment(uint postIndex, string memory comment) public {
-    require(!postConsensus(postIndex) && postVotes[postIndex].length > 1);
+    //require(!postConsensus(postIndex) && postVotes[postIndex].length > 1);
     postComments[postIndex].push(comments.length);
     comments.push(Comment({
       id: comments.length,
       addr: msg.sender,
       comment: comment,
-      date: now
+      date: block.timestamp 
     }));
   }
 
@@ -168,7 +153,7 @@ contract Posts is owned {
       id: votes.length,
       addr: msg.sender,
       up: up,
-      date: now,
+      date: block.timestamp,
       changed: false
     }));
 
@@ -195,13 +180,13 @@ contract Posts is owned {
   }
 
   function addCommentComment(uint commentIndex, string memory comment) public {
-    require(!commentConsensus(commentIndex));
+    //require(!commentConsensus(commentIndex));
     commentComments[commentIndex].push(comments.length);
     comments.push(Comment({
       id: comments.length,
       addr: msg.sender,
       comment: comment,
-      date: now
+      date: block.timestamp 
     }));
   }
 
