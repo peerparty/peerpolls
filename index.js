@@ -260,7 +260,7 @@ async function run() {
   const contracts = JSON.parse(source)["contracts"]
 
   // ABI description as JSON structure
-  const abi = JSON.parse(contracts["consensus.sol:Posts"].abi)
+  const abi = contracts["consensus.sol:Posts"].abi
 
   // Smart contract EVM bytecode as hex
   const code = '0x' + contracts["consensus.sol:Posts"].bin 
@@ -272,10 +272,6 @@ async function run() {
   } else if(process.argv.length === 3) {
     posts(abi, process.argv[2])
   } else if(process.argv.length > 4) {
-
-    //await unlock(process.argv[2], process.argv[3])
-    //await unlock(process.argv[5], process.argv[6], 15000)
-
     console.log("Testing...")
     await unlock(process.argv[2], process.argv[3])
     await unlock(process.argv[5], process.argv[6], 15000)
@@ -291,4 +287,3 @@ async function run() {
 }
 
 run()
-
