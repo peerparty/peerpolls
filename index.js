@@ -272,6 +272,10 @@ async function run() {
   } else if(process.argv.length === 3) {
     posts(abi, process.argv[2])
   } else if(process.argv.length > 4) {
+
+    //await unlock(process.argv[2], process.argv[3])
+    //await unlock(process.argv[5], process.argv[6], 15000)
+
     console.log("Testing...")
     await unlock(process.argv[2], process.argv[3])
     await unlock(process.argv[5], process.argv[6], 15000)

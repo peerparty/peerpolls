@@ -179,4 +179,12 @@ Get accounts
 
     > eth.accounts
 
+Create account
+
+    > personal.newAccount("password")
+
+Send funds to account
+
+    > eth.sendTransaction({from:eth.coinbase, to:eth.accounts[1], value: web3.toWei(1.0, "ether")})
+
 
