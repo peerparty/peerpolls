@@ -38,9 +38,28 @@ async function deploy(abi, code, addr) {
   }
 }
 
+async function exec(addr, call) {
+    console.log('sending')
+    let gas = await call.estimateGas({from: addr})
+    let atx = call.send({from: addr, gas: gas})
+    console.log(`sent ${call._method.name} gas ${gas}`)
+
+    // wrap an unresolved promise
+    return [ atx ]
+}
+
+function sect(name) {
+    console.log(`\n### ${name}\n`)
+}
+
+async function check(atx) {
+    let result = await atx
+    console.log(result.status ? `SUCCESS` : "FAILED.")
+}
+
 async function test(abi, addr, contractAddr, addr2) {
   try { 
-
+    sect('BEGIN')
     const contract = new web3.eth.Contract(abi, contractAddr)
 
     // Event example, doesn't work with HTTP provider - JBG
@@ -50,9 +69,9 @@ async function test(abi, addr, contractAddr, addr2) {
       console.log(error, addr, up)
     })
     */
-
-    const balanceAddr2 = await web3.eth.getBalance(addr2)
-    console.log(`Balance addr2: ${balanceAddr2}`)
+    
+    console.log(`Balance addr1: ${await web3.eth.getBalance(addr)}`)
+    console.log(`Balance addr2: ${await web3.eth.getBalance(addr2)}`)
 
 // Test.sol
 /*
@@ -67,7 +86,7 @@ async function test(abi, addr, contractAddr, addr2) {
     console.log("addr: " + c)
 */
 
-    // Add Post - JBG    
+    sect('Add Post - JBG')
     const addPost = contract.methods.addPost("The Netherlands government does not represent me.", "Elected officials require large donors and rather follow those interests, over my own.")
     let gas = await addPost.estimateGas({from: addr})
     console.log("addPost gas: " + gas)
@@ -78,12 +97,12 @@ async function test(abi, addr, contractAddr, addr2) {
     let c = await contract.methods.postCount().call({from: addr})
     console.log("# Posts: " + c)
 
-    // Get the Post - JBG
+    sect('Get the Post - JBG')
     const postIndex = c - 1;
     const post = await contract.methods.posts(postIndex).call({from: addr})
     console.log("Got post: " + post.id)
 
-    // Vote for the Post - JBG
+    sect('Vote for the Post - JBG')
     let up = false 
     let addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas({from: addr})
@@ -91,7 +110,14 @@ async function test(abi, addr, contractAddr, addr2) {
     tx = await addVote.send({from: addr, gas: gas})
     console.log(tx.status ? `SUCCESS: Vote added, ${up}` : "Tx FAILED.")
 
-    // Chage vote for the Post - JBG
+    sect('Simulvote - DJB')
+    let tx2 = await exec(addr2, contract.methods.addVote(postIndex, up))
+    let tx1 = await exec(addr, contract.methods.addVote(postIndex, up))
+
+    await check(tx1[0])
+    await check(tx2[0])
+
+    sect('Chage vote for the Post - JBG')
     up = true 
     addVote = contract.methods.addVote(postIndex, up)
     gas = await addVote.estimateGas({from: addr})

@@ -1,1 +1,1 @@
-exports.contractAddress = "0x213ef162e7ed2534759126b229a237aca898613c"
+exports.contractAddress = "0x89800F520e152E397Dc08428137132cdFB965648"
