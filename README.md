@@ -137,6 +137,24 @@ Will return the contract address, save it for later.
 
 `$ node index.js  <COINBASE_HASH> <COINBASE_PASSWORD> <CONTRACT_ADDRESS> <TEST_USER_HASH> <TEST_USER_PASSWORD>`
 
+### Nginx configuration
+
+Add a proxy pass for the node.js server.
+
+```
+location /api {
+     proxy_pass http://localhost:3000;
+}
+```
+
+Serve the [polls-app](https://github.com/peerparty/polls-api)
+
+```
+server {
+  root /var/www/html/polls-app;
+}
+```
+
 ## API stuff
 
 ### Login
