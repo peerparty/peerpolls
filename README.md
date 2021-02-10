@@ -115,7 +115,7 @@ What would you like to do? (default = stats)
 
 ### Start geth
 
-`$ geth --unlock <COINBASE_HASH> --password /root/gethpass --mine --rpc --rpcapi "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb --rpcaddr "0.0.0.0" console`
+`$ geth --unlock <COINBASE_HASH> --password /root/gethpass --mine --http --http.api "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb --verbosity 3 --debug --nodiscover --maxpeers 0 --networkid 1337 console`
 
 ## The contract
 
