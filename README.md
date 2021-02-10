@@ -147,7 +147,7 @@ location /api {
 }
 ```
 
-Serve the [polls-app](https://github.com/peerparty/polls-api)
+Serve the [polls-app](https://github.com/peerparty/polls-app)
 
 ```
 server {
@@ -159,15 +159,15 @@ server {
 
 ### Login
 
-`$ curl --cookie-jar cookies.txt -d "name=admin&pwd=password" "https://api.peerparty.org//login"`
+`$ curl --cookie-jar cookies.txt -d "name=admin&pwd=password" "https://api.peerparty.org/login"`
 
 ### Get posts
 
-`$ curl --cookie cookies.txt "https://api.peerparty.org//posts"`
+`$ curl --cookie cookies.txt "https://api.peerparty.org/posts"`
 
 ### Create a post/poll
 
-`$ curl --cookie cookies.txt -d "title=foobar&description=baz" "https://api.peerparty.org//posts"`
+`$ curl --cookie cookies.txt -d "title=foobar&description=baz" "https://api.peerparty.org/posts"`
 
 ### Up vote a post/poll
 
