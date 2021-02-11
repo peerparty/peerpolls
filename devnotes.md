@@ -1,13 +1,10 @@
 # Peer Party
 
+topic: notes from devin, some should be put in README
+
 https://github.com/peerparty/peerpolls
 
 /home/dev/.ethereum/keystore/
-
-Hash: 0x159D8ea11f57d12b6Ea0627CF399a95D0FBBb0aB
-Contract: 0x89800F520e152E397Dc08428137132cdFB965648
-
-put contact address in `address.js`
 
 git clone https://github.com/peerparty/polls-app
 
@@ -36,7 +33,6 @@ Login to API:
 Create the test users:
 
      curl --cookie-jar cookies.txt -d "pwd=PASSWORD" "http://localhost:9999/api/users"
-
 
 Default logins
 - "admin" and password "PASSWORD"

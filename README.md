@@ -28,7 +28,15 @@ Political polling billboard with voting and comment system built on a private Et
 
 `$ geth account new`
 
-Save the id somewhere for later as COINBASE\_HASH, for example in `creds.js`, which will be used by the API later.
+Save the id somewhere for later in `creds.js` as the `admin.addr`.
+
+Save the address in the environement:
+
+`$ export COINBASE=0x...`
+
+And the password in a file:
+
+`cat > ./gethpass`
 
 ### Run puppeth wizard
 
@@ -115,7 +123,7 @@ What would you like to do? (default = stats)
 
 ### Start geth
 
-`$ geth --unlock <COINBASE_HASH> --password /root/gethpass --mine --http --http.api "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb --verbosity 3 --debug --nodiscover --maxpeers 0 --networkid 1337 console`
+`$ geth --unlock $COINBASE --password ./gethpass --mine --http --http.api "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb --verbosity 3 --debug --nodiscover --maxpeers 0 --networkid 1337 console`
 
 ## The contract
 
@@ -129,13 +137,24 @@ What would you like to do? (default = stats)
 
 ### Deploy the contract
 
-`$ node index.js <COINBASE_HASH> <COINBASE_PASSWORD>`
+`$ node index.js "$COINBASE" "$(cat ./gethpass)"`
 
-Will return the contract address, save it for later.
+Will return the contract address. Add it to `config.js`.
+
+### Create a test user
+
+`$ node index.js  $COINBASE $(cat ./gethpass) adduser pass`
+
+Save the testuser address and password in `creds.js` and in the environment:
+
+```
+export TESTUSER_ADDR=0x...
+export TESTUSER_PASS=pass
+```
 
 ### Test the contract
 
-`$ node index.js  <COINBASE_HASH> <COINBASE_PASSWORD> <CONTRACT_ADDRESS> <TEST_USER_HASH> <TEST_USER_PASSWORD>`
+`$ node index.js  $COINBASE $(cat ./gethpass) test $TESTUSER_ADDR $TESTUSER_PASS`
 
 ### Nginx configuration
 
