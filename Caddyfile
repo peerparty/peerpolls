@@ -1,0 +1,20 @@
+# Caddyfile
+
+{
+    auto_https off
+}
+
+:9999
+
+log {
+    format console
+}
+
+root * ./polls-app
+file_server browse
+
+route /api* {
+    #uri strip_prefix /api
+    reverse_proxy localhost:3000
+}
+
