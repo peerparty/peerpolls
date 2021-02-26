@@ -28,7 +28,15 @@ Political polling billboard with voting and comment system built on a private Et
 
 `$ geth account new`
 
-Save the id somewhere for later as COINBASE\_HASH, for example in `creds.js`, which will be used by the API later.
+Save the id somewhere for later in `creds.js` as the `admin.addr`.
+
+Save the address in the environement:
+
+`$ export COINBASE=0x...`
+
+And the password in a file:
+
+`cat > ./gethpass`
 
 ### Run puppeth wizard
 
@@ -115,7 +123,7 @@ What would you like to do? (default = stats)
 
 ### Start geth
 
-`$ geth --unlock <COINBASE_HASH> --password /root/gethpass --mine --rpc --rpcapi "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb --rpcaddr "0.0.0.0" console`
+`$ geth --unlock $COINBASE --password ./gethpass --mine --http --http.api "eth,net,web3,admin,personal" --allow-insecure-unlock --nousb --verbosity 3 --debug --nodiscover --maxpeers 0 --networkid 1337 console`
 
 ## The contract
 
@@ -129,27 +137,56 @@ What would you like to do? (default = stats)
 
 ### Deploy the contract
 
-`$ node index.js <COINBASE_HASH> <COINBASE_PASSWORD>`
+`$ node index.js "$COINBASE" "$(cat ./gethpass)"`
 
-Will return the contract address, save it for later.
+Will return the contract address. Add it to `config.js`.
+
+### Create a test user
+
+`$ node index.js  $COINBASE $(cat ./gethpass) adduser pass`
+
+Save the testuser address and password in `creds.js` and in the environment:
+
+```
+export TESTUSER_ADDR=0x...
+export TESTUSER_PASS=pass
+```
 
 ### Test the contract
 
-`$ node index.js  <COINBASE_HASH> <COINBASE_PASSWORD> <CONTRACT_ADDRESS> <TEST_USER_HASH> <TEST_USER_PASSWORD>`
+`$ node index.js  $COINBASE $(cat ./gethpass) test $TESTUSER_ADDR $TESTUSER_PASS`
+
+### Nginx configuration
+
+Add a proxy pass for the node.js server.
+
+```
+location /api {
+     proxy_pass http://localhost:3000;
+}
+```
+
+Serve the [polls-app](https://github.com/peerparty/polls-app)
+
+```
+server {
+  root /var/www/html/polls-app;
+}
+```
 
 ## API stuff
 
 ### Login
 
-`$ curl --cookie-jar cookies.txt -d "name=admin&pwd=password" "https://api.peerparty.org//login"`
+`$ curl --cookie-jar cookies.txt -d "name=admin&pwd=password" "https://api.peerparty.org/login"`
 
 ### Get posts
 
-`$ curl --cookie cookies.txt "https://api.peerparty.org//posts"`
+`$ curl --cookie cookies.txt "https://api.peerparty.org/posts"`
 
 ### Create a post/poll
 
-`$ curl --cookie cookies.txt -d "title=foobar&description=baz" "https://api.peerparty.org//posts"`
+`$ curl --cookie cookies.txt -d "title=foobar&description=baz" "https://api.peerparty.org/posts"`
 
 ### Up vote a post/poll
 
@@ -178,5 +215,13 @@ Get account balance.
 Get accounts
 
     > eth.accounts
+
+Create account
+
+    > personal.newAccount("password")
+
+Send funds to account
+
+    > eth.sendTransaction({from:eth.coinbase, to:eth.accounts[1], value: web3.toWei(1.0, "ether")})
 
 

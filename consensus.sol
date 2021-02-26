@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.3;
+pragma solidity ^0.8.0;
 
 //pragma experimental ABIEncoderV2;
 
 contract Posts {
 
   //event VoteEvent(address indexed from, bool value);
+
+  event NewPost(uint id);
+  event NewComment(uint id);
 
   struct Vote {
     uint id;
@@ -20,6 +23,7 @@ contract Posts {
     address addr;
     string comment;
     uint date; 
+    mapping(address => uint) votesByUser;
   }
 
   struct Post {
@@ -28,6 +32,7 @@ contract Posts {
     string title;
     string description;
     uint date;
+    mapping(address => uint) votesByUser;
   }
   
   Post[] public posts;
@@ -40,13 +45,15 @@ contract Posts {
   mapping (uint => uint[]) public commentComments;
 
   function addPost(string memory title, string memory description) public {
-    posts.push(Post({
-      id: posts.length,
-      addr: msg.sender,
-      title: title,
-      description: description,
-      date: block.timestamp 
-    }));
+    Post storage post = posts.push();
+    
+    post.id = posts.length - 1;
+    post.addr = msg.sender;
+    post.title = title;
+    post.description = description;
+    post.date = block.timestamp;
+
+    emit NewPost(post.id);
   }
 
   function postCount() public view returns (uint) {
@@ -85,17 +92,18 @@ contract Posts {
   */
 
   function addVote(uint postIndex, bool up) public  {
-
-    /* Change vote if already voted - JBG */
-    for(uint i = 0; i < postVotes[postIndex].length; i++) {
-      uint voteId = postVotes[postIndex][i];
-      if(votes[voteId].addr == msg.sender) {
-        votes[voteId].changed = true;
-      }
+    
+    // Mark the old vote as changed (meaning obsolete)
+    uint oldVote = posts[postIndex].votesByUser[msg.sender];
+    if(oldVote != 0) {
+        votes[oldVote].changed = true;
     }
 
-    /* Otherwise create new vote - JBG */
+    // record vote for this post
+    posts[postIndex].votesByUser[msg.sender] = votes.length;
     postVotes[postIndex].push(votes.length);
+
+    // save vote
     votes.push(Vote({
       id: votes.length,
       addr: msg.sender,
@@ -103,7 +111,6 @@ contract Posts {
       date: block.timestamp,
       changed: false 
     }));
-
   }
 
   function postConsensus(uint postIndex) public view returns (bool) {
@@ -126,37 +133,40 @@ contract Posts {
 
   }
 
-  function addComment(uint postIndex, string memory comment) public {
+  function addComment(uint postIndex, string memory body) public {
     //require(!postConsensus(postIndex) && postVotes[postIndex].length > 1);
-    postComments[postIndex].push(comments.length);
-    comments.push(Comment({
-      id: comments.length,
-      addr: msg.sender,
-      comment: comment,
-      date: block.timestamp 
-    }));
+    
+    Comment storage comment = comments.push();
+    
+    comment.id = comments.length - 1;
+    comment.addr = msg.sender;
+    comment.date = block.timestamp;
+    comment.comment = body;
+
+    postComments[postIndex].push(comment.id);
+    emit NewComment(comment.id);
   }
 
   function addCommentVote(uint commentIndex, bool up) public {
-
-    /* Change vote if already voted - JBG */
-    for(uint i = 0; i < commentVotes[commentIndex].length; i++) {
-      uint voteId = commentVotes[commentIndex][i];
-      if(votes[voteId].addr == msg.sender) {
-        votes[voteId].changed = true;
-      }
+    
+    // Mark the old vote as changed (meaning obsolete)
+    uint oldVote = comments[commentIndex].votesByUser[msg.sender];
+    if(oldVote != 0) {
+        votes[oldVote].changed = true;
     }
 
-    /* Otherwise create new vote - JBG */
+    // record vote for this post
+    comments[commentIndex].votesByUser[msg.sender] = votes.length;
     commentVotes[commentIndex].push(votes.length);
+
+    // save vote
     votes.push(Vote({
       id: votes.length,
       addr: msg.sender,
       up: up,
       date: block.timestamp,
-      changed: false
+      changed: false 
     }));
-
  }
 
   function commentConsensus(uint commentIndex) public view returns (bool) {
@@ -179,15 +189,18 @@ contract Posts {
 
   }
 
-  function addCommentComment(uint commentIndex, string memory comment) public {
+  function addCommentComment(uint commentIndex, string memory body) public {
     //require(!commentConsensus(commentIndex));
-    commentComments[commentIndex].push(comments.length);
-    comments.push(Comment({
-      id: comments.length,
-      addr: msg.sender,
-      comment: comment,
-      date: block.timestamp 
-    }));
+    
+    Comment storage comment = comments.push();
+    
+    comment.id = comments.length - 1;
+    comment.addr = msg.sender;
+    comment.date = block.timestamp;
+    comment.comment = body;
+
+    commentComments[commentIndex].push(comment.id);
+    emit NewComment(comment.id);
   }
 
 }
